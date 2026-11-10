@@ -54,7 +54,7 @@
     <section class="form-wrap">
       <!-- Submissions go through FormSubmit (formsubmit.co), which emails each inquiry to the address in the action URL.
            The very first submission triggers a one-time activation email to that address; click the link in it to turn the form on. -->
-      <form method="POST" action="https://formsubmit.co/sara@sarajenkins.com">
+      <form id="speaker-inquiry" method="POST" action="https://formsubmit.co/sara@sarajenkins.com">
         <input type="hidden" name="_subject" value="New speaking inquiry from sarajenkins.com">
         <input type="hidden" name="_template" value="table">
         <input type="hidden" name="_next" value="https://sarajenkins.com/thank-you/">
@@ -79,5 +79,18 @@
   </main>
 
   <footer><div class="footer-brand">Sara M. Jenkins</div><div>Speaker · Writer · Discipleship Mentor</div><div>Rooted in Christ · Centered on the gospel</div></footer>
+  <script>
+    // Logs each inquiry to the "Sara Jenkins – Speaker Inquiries" Google Sheet via its Apps Script web app,
+    // then lets the normal FormSubmit post continue so the email still goes out.
+    // sendBeacon is used because it keeps going after the page navigates away.
+    const SHEET_WEBHOOK_URL = 'https://script.google.com/macros/s/AKfycbzaijhmsuBq31zMQjxYPYULJOf4VFFsM4lqLq8wXQ1dI9iocvUSwhlZvRu8yQLr99A/exec';
+    document.getElementById('speaker-inquiry').addEventListener('submit', function (e) {
+      if (!SHEET_WEBHOOK_URL || this.elements['_honey'].value) return;
+      try {
+        const data = new URLSearchParams(new FormData(this));
+        navigator.sendBeacon(SHEET_WEBHOOK_URL, data);
+      } catch (err) { /* never block the email submission */ }
+    });
+  </script>
 </body>
 </html>
