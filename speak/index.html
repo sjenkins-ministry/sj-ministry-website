@@ -83,7 +83,7 @@
     // Logs each inquiry to the "Sara Jenkins – Speaker Inquiries" Google Sheet via its Apps Script web app,
     // then lets the normal FormSubmit post continue so the email still goes out.
     // sendBeacon is used because it keeps going after the page navigates away.
-    const SHEET_WEBHOOK_URL = '';
+    const SHEET_WEBHOOK_URL = 'https://script.google.com/macros/s/AKfycbzaijhmsuBq31zMQjxYPYULJOf4VFFsM4lqLq8wXQ1dI9iocvUSwhlZvRu8yQLr99A/exec';
     document.getElementById('speaker-inquiry').addEventListener('submit', function (e) {
       if (!SHEET_WEBHOOK_URL || this.elements['_honey'].value) return;
       try {
