@@ -52,11 +52,13 @@
     </section>
 
     <section class="form-wrap">
-      <!-- Submissions are handled by Netlify Forms (data-netlify). This only works when the site is deployed on Netlify;
-           on any other host, point the form's action at that host's form handler. -->
-      <form name="speaker-inquiry" method="POST" data-netlify="true" netlify-honeypot="bot-field" action="../thank-you/">
-        <input type="hidden" name="form-name" value="speaker-inquiry">
-        <p class="hidden" aria-hidden="true"><label>Do not fill this out: <input name="bot-field" tabindex="-1" autocomplete="off"></label></p>
+      <!-- Submissions go through FormSubmit (formsubmit.co), which emails each inquiry to the address in the action URL.
+           The very first submission triggers a one-time activation email to that address; click the link in it to turn the form on. -->
+      <form method="POST" action="https://formsubmit.co/saramariejenks@gmail.com">
+        <input type="hidden" name="_subject" value="New speaking inquiry from sarajenkins.com">
+        <input type="hidden" name="_template" value="table">
+        <input type="hidden" name="_next" value="https://sarajenkins.com/thank-you/">
+        <p class="hidden" aria-hidden="true"><label>Do not fill this out: <input name="_honey" tabindex="-1" autocomplete="off"></label></p>
         <div class="grid">
           <div class="field"><label for="name">Name *</label><input id="name" name="name" autocomplete="name" required></div>
           <div class="field"><label for="organization">Church / Organization</label><input id="organization" name="organization" autocomplete="organization"></div>
