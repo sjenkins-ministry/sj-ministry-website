@@ -18,18 +18,4 @@ This is a buildless static site. Publish this folder as the website root. Google
 Source commit: 51164255176ebd93d418a5676a04891aa5aa2ae6
 ## Guidance & Mentoring form (`mentoring/`)
 - Emails each request to sara@sarajenkins.com through FormSubmit, then redirects to `mentoring/thank-you/`.
-- Also logs to the Google Sheet "Sara Jenkins – Guidance & Mentoring Requests" once its Apps Script web app is deployed and its `/exec` URL is pasted into `SHEET_WEBHOOK_URL` in `mentoring/index.html`.
-
-Apps Script (Sheet → Extensions → Apps Script; Deploy → Web app, Execute as: Me, Who has access: Anyone):
-
-```js
-function doPost(e) {
-  const p = e.parameter;
-  const clean = v => { v = String(v || ''); return /^[=+\-@]/.test(v) ? "'" + v : v; }; // block formula injection
-  SpreadsheetApp.getActiveSpreadsheet().getSheets()[0].appendRow([
-    new Date(), clean(p.name), clean(p.email), clean(p.phone),
-    clean(p['meeting-preference'] || 'Not specified'), clean(p.guidance), clean(p['additional-details'])
-  ]);
-  return ContentService.createTextOutput('ok');
-}
-```
+- Also logs to the "Guidance & Mentoring" tab of the "Sara Jenkins – Speaker Inquiries" Google Sheet, through the same Apps Script web app as the speaker form. The hidden `form=mentoring` field routes the row to that tab; speaker inquiries still go to the first tab.

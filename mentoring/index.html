@@ -62,6 +62,7 @@
       <form id="mentoring-request" method="POST" action="https://formsubmit.co/sara@sarajenkins.com">
         <input type="hidden" name="_subject" value="New guidance & mentoring request from sarajenkins.com">
         <input type="hidden" name="_template" value="table">
+        <input type="hidden" name="form" value="mentoring">
         <input type="hidden" name="_next" value="https://sarajenkins.com/mentoring/thank-you/">
         <p class="hidden" aria-hidden="true"><label>Do not fill this out: <input name="_honey" tabindex="-1" autocomplete="off"></label></p>
         <div class="grid">
@@ -81,10 +82,10 @@
 
   <footer><div class="footer-brand">Sara M. Jenkins</div><div>Speaker · Writer · Spiritual Mentor</div><div>Rooted in Christ · Centered on the gospel</div></footer>
   <script>
-    // Logs each request to the "Sara Jenkins – Guidance & Mentoring Requests" Google Sheet via its Apps Script web app,
-    // then lets the normal FormSubmit post continue so the email still goes out.
-    // Leave empty until the Apps Script web app is deployed; the email path works without it.
-    const SHEET_WEBHOOK_URL = '';
+    // Logs each request to the "Guidance & Mentoring" tab of the "Sara Jenkins – Speaker Inquiries" Google Sheet.
+    // Same Apps Script web app as the speaker form; the hidden form=mentoring field routes it to that tab.
+    // Then the normal FormSubmit post continues so the email still goes out.
+    const SHEET_WEBHOOK_URL = 'https://script.google.com/macros/s/AKfycbxFvAlw-7IjOhwWb4q4Ppw48uc-H-45PJdTyhukbJR4HTqKcgqi76BFg8F4PaJHKIqB/exec';
     document.getElementById('mentoring-request').addEventListener('submit', function (e) {
       if (!SHEET_WEBHOOK_URL || this.elements['_honey'].value) return;
       try {
