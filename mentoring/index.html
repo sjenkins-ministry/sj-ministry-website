@@ -59,9 +59,10 @@
     <section class="form-wrap">
       <!-- Submissions go through FormSubmit (formsubmit.co), which emails each request to the address in the action URL.
            If FormSubmit sends a one-time activation email for this form, click the link in it to turn the form on. -->
-      <form id="mentoring-request" method="POST" action="https://formsubmit.co/sara@sarajenkins.com">
+      <form id="mentoring-request" method="POST" action="https://formsubmit.co/65e0b86766fe62179ccb960bd7daefac">
         <input type="hidden" name="_subject" value="New guidance & mentoring request from sarajenkins.com">
         <input type="hidden" name="_template" value="table">
+        <input type="hidden" name="_captcha" value="false">
         <input type="hidden" name="form" value="mentoring">
         <input type="hidden" name="_next" value="https://sarajenkins.com/mentoring/thank-you/">
         <p class="hidden" aria-hidden="true"><label>Do not fill this out: <input name="_honey" tabindex="-1" autocomplete="off"></label></p>
@@ -82,16 +83,31 @@
 
   <footer><div class="footer-brand">Sara M. Jenkins</div><div>Speaker · Writer · Spiritual Mentor</div><div>Rooted in Christ · Centered on the gospel</div></footer>
   <script>
-    // Logs each request to the "Guidance & Mentoring" tab of the "Sara Jenkins – Speaker Inquiries" Google Sheet.
-    // Same Apps Script web app as the speaker form; the hidden form=mentoring field routes it to that tab.
-    // Then the normal FormSubmit post continues so the email still goes out.
+    // Logs each request to the "Guidance & Mentoring" tab of the "Sara Jenkins – Speaker Inquiries" Google Sheet
+    // (same Apps Script web app as the speaker form; the hidden form=mentoring field routes it to that tab).
     const SHEET_WEBHOOK_URL = 'https://script.google.com/macros/s/AKfycbxFvAlw-7IjOhwWb4q4Ppw48uc-H-45PJdTyhukbJR4HTqKcgqi76BFg8F4PaJHKIqB/exec';
+    // The email goes through FormSubmit's AJAX endpoint in the background, so visitors never see a FormSubmit page.
+    // keepalive lets the request finish even after we move on to the thank-you page.
+    const FORMSUBMIT_AJAX_URL = 'https://formsubmit.co/ajax/65e0b86766fe62179ccb960bd7daefac';
+    const THANK_YOU_URL = '/mentoring/thank-you/';
+    const MAX_WAIT_MS = 4000;
     document.getElementById('mentoring-request').addEventListener('submit', function (e) {
-      if (!SHEET_WEBHOOK_URL || this.elements['_honey'].value) return;
+      e.preventDefault();
+      const form = this;
+      const button = form.querySelector('button[type="submit"]');
+      const done = function () { window.location.href = THANK_YOU_URL; };
+      if (form.elements['_honey'].value) { done(); return; }
+      button.disabled = true;
+      button.textContent = 'Sending…';
+      const data = new URLSearchParams(new FormData(form));
+      try { if (SHEET_WEBHOOK_URL) navigator.sendBeacon(SHEET_WEBHOOK_URL, data); } catch (err) { /* never block the email */ }
+      let request;
       try {
-        const data = new URLSearchParams(new FormData(this));
-        navigator.sendBeacon(SHEET_WEBHOOK_URL, data);
-      } catch (err) { /* never block the email submission */ }
+        request = fetch(FORMSUBMIT_AJAX_URL, { method: 'POST', body: data, headers: { Accept: 'application/json' }, keepalive: true });
+      } catch (err) { form.submit(); return; }
+      // Move on as soon as FormSubmit answers, or after MAX_WAIT_MS at most (keepalive keeps the request going).
+      const timer = setTimeout(done, MAX_WAIT_MS);
+      request.then(done, function () { clearTimeout(timer); form.submit(); });
     });
   </script>
 </body>
