@@ -99,6 +99,13 @@
       if (form.elements['_honey'].value) { done(); return; }
       button.disabled = true;
       button.textContent = 'Sending…';
+      const val = function (n) { const el = form.elements[n]; return el && el.value ? String(el.value).trim() : ''; };
+      // A timestamp makes every subject unique, so Gmail gives each submission its own email instead of one thread.
+      const stamp = new Date().toLocaleString('en-US', { month: 'short', day: 'numeric', year: 'numeric', hour: 'numeric', minute: '2-digit' });
+      const prefInput = form.querySelector('input[name="meeting-preference"]:checked');
+      const subjectParts = ['Mentoring request: ' + val('name')];
+      if (prefInput) subjectParts.push(prefInput.value);
+      form.elements['_subject'].value = subjectParts.join(' · ') + ' [' + stamp + ']';
       const data = new URLSearchParams(new FormData(form));
       try { if (SHEET_WEBHOOK_URL) navigator.sendBeacon(SHEET_WEBHOOK_URL, data); } catch (err) { /* never block the email */ }
       let request;
