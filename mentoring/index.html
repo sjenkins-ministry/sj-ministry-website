@@ -64,7 +64,6 @@
         <input type="hidden" name="_subject" value="New guidance & mentoring request from sarajenkins.com">
         <input type="hidden" name="_template" value="table">
         <input type="hidden" name="_captcha" value="false">
-        <input type="hidden" name="form" value="mentoring">
         <input type="hidden" name="_next" value="https://sarajenkins.com/mentoring/thank-you/">
         <p class="hidden" aria-hidden="true"><label>Do not fill this out: <input name="_honey" tabindex="-1" autocomplete="off"></label></p>
         <div class="grid">
@@ -85,7 +84,7 @@
   <footer><div class="footer-brand">Sara M. Jenkins</div><div>Speaker · Writer · Spiritual Mentor</div><div>Rooted in Christ · Centered on the gospel</div></footer>
   <script>
     // Logs each request to the "Guidance & Mentoring" tab of the "Sara Jenkins – Speaker Inquiries" Google Sheet
-    // (same Apps Script web app as the speaker form; the hidden form=mentoring field routes it to that tab).
+    // (same Apps Script web app as the speaker form; a form=mentoring value added in the script routes it to that tab).
     const SHEET_WEBHOOK_URL = 'https://script.google.com/macros/s/AKfycbxFvAlw-7IjOhwWb4q4Ppw48uc-H-45PJdTyhukbJR4HTqKcgqi76BFg8F4PaJHKIqB/exec';
     // The email goes through FormSubmit's AJAX endpoint in the background, so visitors never see a FormSubmit page.
     // keepalive lets the request finish even after we move on to the thank-you page.
@@ -108,7 +107,10 @@
       if (prefInput) subjectParts.push(prefInput.value);
       form.elements['_subject'].value = subjectParts.join(' · ') + ' [' + stamp + ']';
       const data = new URLSearchParams(new FormData(form));
-      try { if (SHEET_WEBHOOK_URL) navigator.sendBeacon(SHEET_WEBHOOK_URL, data); } catch (err) { /* never block the email */ }
+      // form=mentoring routes the row to the Guidance & Mentoring tab. It goes to the Sheet only, so the email shows just one Form row.
+      const sheetData = new URLSearchParams(data);
+      sheetData.set('form', 'mentoring');
+      try { if (SHEET_WEBHOOK_URL) navigator.sendBeacon(SHEET_WEBHOOK_URL, sheetData); } catch (err) { /* never block the email */ }
       let request;
       try {
         request = fetch(FORMSUBMIT_AJAX_URL, { method: 'POST', body: data, headers: { Accept: 'application/json' }, keepalive: true });
