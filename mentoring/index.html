@@ -60,6 +60,7 @@
       <!-- Submissions go through FormSubmit (formsubmit.co), which emails each request to the address in the action URL.
            If FormSubmit sends a one-time activation email for this form, click the link in it to turn the form on. -->
       <form id="mentoring-request" method="POST" action="https://formsubmit.co/65e0b86766fe62179ccb960bd7daefac">
+        <input type="hidden" name="Form" value="Guidance & Mentoring Request">
         <input type="hidden" name="_subject" value="New guidance & mentoring request from sarajenkins.com">
         <input type="hidden" name="_template" value="table">
         <input type="hidden" name="_captcha" value="false">
@@ -103,7 +104,7 @@
       // A timestamp makes every subject unique, so Gmail gives each submission its own email instead of one thread.
       const stamp = new Date().toLocaleString('en-US', { month: 'short', day: 'numeric', year: 'numeric', hour: 'numeric', minute: '2-digit' });
       const prefInput = form.querySelector('input[name="meeting-preference"]:checked');
-      const subjectParts = ['Mentoring request: ' + val('name')];
+      const subjectParts = ['Guidance & Mentoring request: ' + val('name')];
       if (prefInput) subjectParts.push(prefInput.value);
       form.elements['_subject'].value = subjectParts.join(' · ') + ' [' + stamp + ']';
       const data = new URLSearchParams(new FormData(form));
